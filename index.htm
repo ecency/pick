@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Picker : Steem comment winner </title>
+  <meta name="description" content="steem comment picker to choose random winner for your contests and challenges">
+  <meta property="og:title" content="steem comment picker">
+  <meta property="og:site_name" content="picker.esteem.ws">
+  <meta property="og:description" content="steem comment picker to choose random winner for your contests and challenges">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+  <script src="./files/clipboard.min.js"></script>
+  <script type="text/javascript">
+    function getRandom(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
+  var author;var handle;
+  function loadpost(author,permlink, type){
+    steem.api.getContentReplies(author, permlink, function(err, result) {
+      //console.log(err, result);
+      if (err) {
+        $("#count").html('Error occured! Try again!');
+      }
+
+      if (result) {
+        $("#count").html('Amount of unique commenters: '+result.length);
+        if (type === 'random') {
+          var rnd = getRandom(0, result.length);
+          $("#loader").fadeOut();
+          $("#source").html('Winner: \n'+result[rnd].author+'\n\nComment: \n'+result[rnd].body);
+          $("#links").html('https://steemit.com'+result[rnd].url);
+          $(".clipbtn").fadeIn();
+          $('#source').fadeIn();
+          $('#links').fadeIn();  
+        } else if (type === 'voted') {
+          var max = 0;
+          var ind = 0;
+          for (var i = result.length - 1; i >= 0; i--) {
+            if (result[i].net_votes > max) {
+              max = result[i].net_votes;
+              ind = i;
+            }
+          }
+          $("#loader").fadeOut();
+          $("#source").html('Winner: \n'+result[ind].author+'\n\nComment: \n'+result[ind].body);
+          $("#links").html('https://steemit.com'+result[ind].url);
+          $(".clipbtn").fadeIn();
+          $('#source').fadeIn();
+          $('#links').fadeIn();  
+        } else if (type === 'engaged') {
+          var max = 0;
+          var ind = 0;
+          for (var i = result.length - 1; i >= 0; i--) {
+            if (result[i].children > max) {
+              max = result[i].children;
+              ind = i;
+            }
+          }
+          $("#loader").fadeOut();
+          $("#source").html('Winner: \n'+result[ind].author+'\n\nComment: \n'+result[ind].body);
+          $("#links").html('https://steemit.com'+result[ind].url);
+          $(".clipbtn").fadeIn();
+          $('#source').fadeIn();
+          $('#links').fadeIn();  
+        } else if (type === 'earned') {
+          var max = 0;
+          var ind = 0;
+          for (var i = result.length - 1; i >= 0; i--) {
+            if (Number(result[i].net_rshares) > max) {
+              max = Number(result[i].net_rshares);
+              ind = i;
+            }
+          }
+          $("#loader").fadeOut();
+          $("#source").html('Winner: \n'+result[ind].author+'\n\nComment: \n'+result[ind].body);
+          $("#links").html('https://steemit.com'+result[ind].url);
+          $(".clipbtn").fadeIn();
+          $('#source').fadeIn();
+          $('#links').fadeIn();  
+        }
+      }
+    });
+  }
+
+  function openlinks(argument) {
+    var valu = $('#links').val();
+    window.open(valu, '_blank');
+  }
+  $(document).ready(function() {
+    new Clipboard('.clipbtn');
+    $("#permlink").submit(function(event) {
+      event.preventDefault();
+      $("#loader").fadeIn();
+      var handle = $("#permlinkstr").val();
+      if (handle.startsWith("@")){handle=handle.substr(1);}
+      handle = handle.split("/");
+      var author = handle[0];
+      var permlink = handle[1];
+      loadpost(author,permlink, 'random');
+    });
+    $("#submitbutton2").click(function(event){
+      event.preventDefault();
+      $("#loader").fadeIn();
+      var handle = $("#permlinkstr").val();
+      if (handle.startsWith("@")){handle=handle.substr(1);}
+      handle = handle.split("/");
+      var author = handle[0];
+      var permlink = handle[1];
+      loadpost(author,permlink, 'voted');
+    });
+    $("#submitbutton3").click(function(event){
+      event.preventDefault();
+      $("#loader").fadeIn();
+      var handle = $("#permlinkstr").val();
+      if (handle.startsWith("@")){handle=handle.substr(1);}
+      handle = handle.split("/");
+      var author = handle[0];
+      var permlink = handle[1];
+      loadpost(author,permlink, 'engaged');
+    });
+    $("#submitbutton4").click(function(event){
+      event.preventDefault();
+      $("#loader").fadeIn();
+      var handle = $("#permlinkstr").val();
+      if (handle.startsWith("@")){handle=handle.substr(1);}
+      handle = handle.split("/");
+      var author = handle[0];
+      var permlink = handle[1];
+      loadpost(author,permlink, 'earned');
+    });
+    $("#openlink").click(function(event){
+      openlinks();
+    });
+   });
+
+
+  </script>
+  <style type="text/css">
+    body {height:100%;text-align:center;}
+    #outerContainer {height:100%;width:80%;margin:0 auto;}
+    .logo {text-align:center;clear:both;margin:0 auto;height:100px;}
+    a {text-decoration:none;font-weight:bold;color:rgb(26, 80, 153);}
+    #permlinkstr {text-align:center;border : solid 2px #1e3e60;border-radius : 3px;moz-border-radius : 3px;font-size : 20px;color : #000;	padding : 1px 17px;	background-color : #fff; width:80%;}
+    #submitbutton, #submitbutton2, #submitbutton3, #submitbutton4, .clipbtn {border : solid 2px #ffffff;border-radius : 3px;moz-border-radius : 3px;font-size : 20px;color : #ffffff;	padding : 1px 17px;	background-color : #1e3e60;}
+    h1,h2,h3,h4,h5 {color:#1e3e60;}
+    #source {width:100%;display:none;height:100%;padding:5px;border-radius:3px;border:3px solid #1e3e60;}
+    #links {width:100%;display:none;height:100%;padding:5px;border-radius:3px;border:3px solid #1e3e60;}
+    pre,#log {white-space: pre-wrap;white-space: -moz-pre-wrap; white-space: -o-pre-wrap;}
+    #loader {display:none;}
+    .clipbtn {display:none;}
+    textarea {height:auto;}    
+  </style>
+</head><body>
+<div id="outerContainer">
+<a href="https://picker.esteem.ws"><img src="./files/logo.png" class="logo"></a><br><br>
+  <form id="permlink">
+    <input type="text" id="permlinkstr" name="permlink" value="good-karma/day-1-steem-advent-calendar-2017-win-prize-everyday-93dc41e1c99f4"><br>
+    <input type="submit" id="submitbutton" value="Pick random winner">
+    <input type="submit" id="submitbutton2" value="Top voted">
+    <input type="submit" id="submitbutton3" value="Top engaged">
+    <input type="submit" id="submitbutton4" value="Top earned">
+  </form><br>
+  <span id='count'></span><br>
+  <textarea class="markup" id="source" rows="15"></textarea>
+  <textarea class="markup" id="links" rows="1"></textarea>
+  <div id="loader"><img src="./files/loader.gif"></div>
+  <button class="clipbtn" data-clipboard-target="#links">Copy link to clipboard</button>
+  <button class="clipbtn" id="openlink">Open comment</button>
+</div>
+
+</body></html>
