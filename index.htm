@@ -5,7 +5,7 @@
   <title>Picker : Steem comment winner </title>
   <meta name="description" content="steem comment picker to choose random winner for your contests and challenges">
   <meta property="og:title" content="steem comment picker">
-  <meta property="og:site_name" content="picker.esteem.ws">
+  <meta property="og:site_name" content="pick.esteem.ws">
   <meta property="og:description" content="steem comment picker to choose random winner for your contests and challenges">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
@@ -16,6 +16,7 @@
     }
   var author;var handle;
   function loadpost(author,permlink, type){
+    steem.api.setOptions({ url: 'https://api.steemit.com' });
     steem.api.getContentReplies(author, permlink, function(err, result) {
       //console.log(err, result);
       if (err) {
